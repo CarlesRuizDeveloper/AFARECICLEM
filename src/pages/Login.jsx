@@ -5,13 +5,15 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); 
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Añadir estado de carga
   const { login } = useContext(AuthContext); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); 
+    setError('');
+    setIsLoading(true); // Activar estado de carga
 
     try {
       const response = await fetch('http://localhost:8000/api/login', {
@@ -23,14 +25,16 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        login(data.token); 
-        navigate('/'); 
+        login(data.token);
+        navigate('/');
       } else {
-        setError(data.message || 'Error en les credencials');
+        setError(data.errors?.email ? data.errors.email[0] : data.message || 'Error en les credencials');
       }
     } catch (error) {
       console.error('Error en el login:', error);
-      setError('Error en el servidor. Torna-ho a intentar més tard.'); 
+      setError('Error en el servidor. Torna-ho a intentar més tard.');
+    } finally {
+      setIsLoading(false); // Desactivar estado de carga después de completar la petición
     }
   };
 
@@ -39,7 +43,7 @@ const Login = () => {
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80">
         <h2 className="text-2xl mb-4">Inicia sessió</h2>
 
-        {error && ( 
+        {error && (
           <div className="mb-4 text-red-500">
             {error}
           </div>
@@ -65,7 +69,13 @@ const Login = () => {
             required
           />
         </div>
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Inicia sessió</button>
+        <button 
+          type="submit" 
+          className="w-full bg-blue-500 text-white p-2 rounded" 
+          disabled={isLoading} 
+        >
+          {isLoading ? 'Iniciant sessió...' : 'Inicia sessió'}
+        </button>
       </form>
     </div>
   );
