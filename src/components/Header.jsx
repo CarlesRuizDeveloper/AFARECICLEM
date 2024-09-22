@@ -40,17 +40,20 @@ const Header = () => {
   }, [menuOpen]);
 
   return (
-    <header className="w-full bg-gray-900 text-white fixed top-0 z-50">
+    <header className="w-full bg-white text-black fixed top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
+        <div className="flex justify-between items-center h-16 mt-5">
+          <div className="flex items-center text-lg sm:text-xl font-bold">
             <Link to="/">
-              <img src={logo} alt="AFARECICLEM Logo" className="h-10 w-auto sm:h-12" />
+              <img src={logo} alt="AFARECICLEM Logo" className="h-16 w-auto sm:h-20 " />
             </Link>
           </div>
           <div className="relative">
-            <button onClick={handleUserIconClick}>
+            <button onClick={handleUserIconClick}
+            className="flex items-center py-1 px-2 sm:py-2 sm:px-4 bg-blue-500 hover:bg-blue-700 rounded transition text-white text-sm sm:text-base"
+            >
               <UserIcon className="h-8 w-8 text-white hover:text-gray-300" />
+              
             </button>
             
             {menuOpen && (
