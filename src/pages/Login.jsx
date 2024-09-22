@@ -1,41 +1,52 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // Importa el hook useAuth
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth(); // Usa el hook useAuth para obtener la función login
+  const [error, setError] = useState(''); 
+  const { login } = useContext(AuthContext); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); 
+
     try {
       const response = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        login(data.token); // Llamamos a la función login con el token
-        navigate('/'); // Redireccionamos al home
+        login(data.token); 
+        navigate('/'); 
       } else {
-        alert('Credenciales incorrectas');
+        setError(data.message || 'Error en les credencials');
       }
     } catch (error) {
       console.error('Error en el login:', error);
+      setError('Error en el servidor. Torna-ho a intentar més tard.'); 
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen">
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80">
-        <h2 className="text-2xl mb-4">Login</h2>
+        <h2 className="text-2xl mb-4">Inicia sessió</h2>
+
+        {error && ( 
+          <div className="mb-4 text-red-500">
+            {error}
+          </div>
+        )}
+
         <div className="mb-4">
-          <label className="block mb-2">Email</label>
+          <label className="block mb-2">Correu electrònic</label>
           <input
             type="email"
             value={email}
@@ -45,7 +56,7 @@ const Login = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-2">Password</label>
+          <label className="block mb-2">Contrasenya</label>
           <input
             type="password"
             value={password}
@@ -54,7 +65,7 @@ const Login = () => {
             required
           />
         </div>
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Login</button>
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Inicia sessió</button>
       </form>
     </div>
   );

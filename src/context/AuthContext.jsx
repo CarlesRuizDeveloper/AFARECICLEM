@@ -1,26 +1,35 @@
-// src/context/AuthContext.jsx
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// Creamos el contexto
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
-// Creamos un proveedor del contexto de autenticación
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();  
 
-  // Función para simular login
-  const login = () => setIsAuthenticated(true);
+  const login = (token) => {
+    setUser(token);
+    localStorage.setItem('token', token);
+    navigate('/dashboard');
+  };
 
-  // Función para simular logout
-  const logout = () => setIsAuthenticated(false);
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+    navigate('/'); 
+  };
+
+  const checkAuthStatus = async () => {
+  
+    const token = localStorage.getItem('token');
+    return !!token; 
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, checkAuthStatus }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
