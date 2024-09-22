@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; 
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ const Login = () => {
       const response = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
@@ -28,6 +28,7 @@ const Login = () => {
         login(data.token); 
         navigate('/'); 
       } else {
+        setError(data.errors?.email ? data.errors.email[0] : data.message || 'Error en les credencials');
         setError(data.errors?.email ? data.errors.email[0] : data.message || 'Error en les credencials');
       }
     } catch (error) {
@@ -49,7 +50,16 @@ const Login = () => {
           </div>
         )}
 
+        <h2 className="text-2xl mb-4">Inicia sessió</h2>
+
+        {error && (
+          <div className="mb-4 text-red-500">
+            {error}
+          </div>
+        )}
+
         <div className="mb-4">
+          <label className="block mb-2">Correu electrònic</label>
           <label className="block mb-2">Correu electrònic</label>
           <input
             type="email"
@@ -60,6 +70,7 @@ const Login = () => {
           />
         </div>
         <div className="mb-4">
+          <label className="block mb-2">Contrasenya</label>
           <label className="block mb-2">Contrasenya</label>
           <input
             type="password"
