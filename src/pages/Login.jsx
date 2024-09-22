@@ -79,7 +79,16 @@ const Login = () => {
 
         <div className="mt-4 flex justify-between">
           <Link to="/forgot-password" className="text-blue-500">He oblidat la contrasenya</Link>
-          <Link to="/register" className="text-blue-500">Registra't</Link>
+        </div>
+        <div className="mt-10">
+          <span>Encara no tens usuari? <br></br></span>
+          <button
+            type="button"
+            onClick={() => navigate('/register')}
+            className="w-full mt-4 bg-green-500 text-white p-2 rounded hover:bg-green-600 transition"
+          >
+            Registra't aquí!
+          </button>
         </div>
       </form>
     </div>
