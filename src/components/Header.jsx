@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; 
-import { UserIcon } from '@heroicons/react/24/outline';  
+import { useAuth } from '../context/AuthContext'; // Hook personalizado
+import { UserIcon } from '@heroicons/react/24/outline'; // Asegúrate de tener esta librería instalada
 import logo from '../assets/logo.jpg'; 
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, logout } = useAuth(); 
+  const { user, logout } = useAuth(); // Hook personalizado
   const navigate = useNavigate();
   const menuRef = useRef(null);
 

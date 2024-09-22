@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext'; 
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth(); 
   const navigate = useNavigate();
 
@@ -19,16 +19,15 @@ const Login = () => {
       const response = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        login(data.token); 
+        login(data.token);
         navigate('/'); 
       } else {
-        setError(data.errors?.email ? data.errors.email[0] : data.message || 'Error en les credencials');
         setError(data.errors?.email ? data.errors.email[0] : data.message || 'Error en les credencials');
       }
     } catch (error) {
@@ -50,16 +49,7 @@ const Login = () => {
           </div>
         )}
 
-        <h2 className="text-2xl mb-4">Inicia sessió</h2>
-
-        {error && (
-          <div className="mb-4 text-red-500">
-            {error}
-          </div>
-        )}
-
         <div className="mb-4">
-          <label className="block mb-2">Correu electrònic</label>
           <label className="block mb-2">Correu electrònic</label>
           <input
             type="email"
@@ -71,7 +61,6 @@ const Login = () => {
         </div>
         <div className="mb-4">
           <label className="block mb-2">Contrasenya</label>
-          <label className="block mb-2">Contrasenya</label>
           <input
             type="password"
             value={password}
@@ -82,24 +71,15 @@ const Login = () => {
         </div>
         <button 
           type="submit" 
-          className="w-full bg-blue-500 text-white p-2 hover:bg-green-600 transition rounded" 
+          className="w-full bg-blue-500 text-white p-2 rounded" 
           disabled={isLoading} 
         >
           {isLoading ? 'Iniciant sessió...' : 'Inicia sessió'}
         </button>
 
-        <div className="mt-4 ">
-          <Link to="/forgot-password" className="text-blue-500 ">He oblidat la contrasenya</Link>
-        </div>
-        <div className="mt-8">
-          <span className="font-bold">Encara no tens usuari?</span>
-          <button 
-            type="button"
-            onClick={() => navigate('/register')}
-            className="mt-4 w-full font-bold bg-green-500 text-black p-2 rounded hover:bg-green-600 transition"
-          >
-            Registra't aquí!
-          </button>
+        <div className="mt-4 flex justify-between">
+          <Link to="/forgot-password" className="text-blue-500">He oblidat la contrasenya</Link>
+          <Link to="/register" className="text-blue-500">Registra't</Link>
         </div>
       </form>
     </div>
