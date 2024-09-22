@@ -1,21 +1,20 @@
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import Home from './pages/Home';  // Importamos los componentes que se usaran en las rutas
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';  
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </div>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />  
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
     </Router>
   );
 }
