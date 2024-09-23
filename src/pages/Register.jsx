@@ -1,4 +1,3 @@
-// src/pages/Register.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,7 +33,6 @@ const Register = () => {
         throw new Error(data.errors?.email ? data.errors.email[0] : data.message || 'Error en el registre');
       }
 
-      // Registro exitoso, redirigir al login
       navigate('/login');
     } catch (error) {
       setError(error.message || 'Error en el servidor. Torna-ho a intentar més tard.');
@@ -49,7 +47,7 @@ const Register = () => {
         <h2 className="text-2xl mb-4">Registre</h2>
 
         {error && (
-          <div className=" mb-4 text-red-500">
+          <div className=" mb-4 text-black font-bold">
             {error}
           </div>
         )}

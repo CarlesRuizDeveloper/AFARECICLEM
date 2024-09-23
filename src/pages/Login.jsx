@@ -44,7 +44,7 @@ const Login = () => {
         <h2 className="text-2xl mb-4">Inicia sessió</h2>
 
         {error && (
-          <div className="mb-4 text-red-500">
+          <div className="mb-4 text-black">
             {error}
           </div>
         )}
