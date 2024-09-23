@@ -44,8 +44,8 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80">
+<div className="flex justify-center items-center h-screen">
+<form onSubmit={handleSubmit} className=" mt-10 bg-gradient-to-b from-darkRed to-softRed text-white p-6 rounded-md shadow-md w-80">
         <h2 className="text-2xl mb-4">Registre</h2>
 
         {error && (
@@ -55,52 +55,52 @@ const Register = () => {
         )}
 
         <div className="mt-8 mb-4">
-          <label className="block mb-2">Nom d'usuari</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            placeholder="Nom d'usuari"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Correu electrònic</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            placeholder="Correu electrònic"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Clau d'accés</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            placeholder="Clau d'accés"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Confirma la clau d'accés</label>
           <input
             type="password"
             value={passwordConfirmation}
             onChange={(e) => setPasswordConfirmation(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            placeholder="Confirma la clau d'accés"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded"
+          className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-green-600 hover:text-white transition"
           disabled={isLoading}
         >
           {isLoading ? "Registrant..." : "Registra't"}
