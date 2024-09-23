@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaLinkedin } from 'react-icons/fa';
 
+
 const Footer = () => {
     return (
         <footer className="w-full bg-darkRed text-white fixed bottom-0 left-0 z-50">
