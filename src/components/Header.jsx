@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
-import { UserIcon } from '@heroicons/react/24/outline'; 
+import { UserIcon } from '@heroicons/react/24/solid'; 
 import logo from '../assets/logo.jpg'; 
 
 const Header = () => {
@@ -50,9 +50,9 @@ const Header = () => {
           </div>
           <div className="relative">
             <button onClick={handleUserIconClick}
-            className="flex items-center py-1 px-2 sm:py-2 sm:px-4 bg-blue-500 hover:bg-blue-700 rounded transition text-white text-sm sm:text-base"
+            className="flex items-center py-1 px-2 sm:py-2 sm:px-4 text-white text-sm sm:text-base"
             >
-              <UserIcon className="h-8 w-8 text-white hover:text-gray-300" />
+              <UserIcon className="h-8 w-8 text-darkRed hover:text-softRed" />
               
             </button>
             
