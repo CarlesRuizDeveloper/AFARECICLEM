@@ -24,7 +24,7 @@ const BookDetail = () => {
   }
 
   return (
-    <div className="max-w-screen-xl mx-auto p-4">
+    <div className="max-w-screen-xl mx-auto p-4 mt-56">
       <h1 className="text-2xl font-bold mb-4">{llibre.titol}</h1>
       <p><strong>Categoria:</strong> {llibre.category.name}</p>
       <p><strong>Curs:</strong> {llibre.curs}</p>
@@ -33,7 +33,7 @@ const BookDetail = () => {
       <p><strong>Observacions:</strong> {llibre.observacions}</p>
       <button 
         onClick={() => alert(`Contactar amb l'usuari: ${llibre.user.name}`)} 
-        className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
+        className="bg-darkRed text-white px-4 py-2 mt-4 rounded"
       >
         Sol·licitar
       </button>
