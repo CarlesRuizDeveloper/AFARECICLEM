@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -15,25 +16,13 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage('Enllaç de restabliment de contrasenya enviat al teu correu electrònic.');
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
-      } else {
-        setError(data.errors?.email ? data.errors.email[0] : data.message || 'Error en el procés.');
-      }
+      await axios.post('http://localhost:8000/api/forgot-password', { email });
+      setMessage('Enllaç de restabliment de contrasenya enviat al teu correu electrònic.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (error) {
-      console.error('Error en la recuperació de contrasenya:', error);
-      setError('Error en el servidor. Torna-ho a intentar més tard.');
+      setError(error.response?.data?.errors?.email ? error.response.data.errors.email[0] : error.response?.data?.message || 'Error en el procés.');
     } finally {
       setIsLoading(false);
     }

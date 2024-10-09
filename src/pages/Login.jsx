@@ -1,40 +1,33 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; 
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true); 
+    setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const response = await axios.post('http://localhost:8000/api/login', {
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        login(data.token);
-        navigate('/'); 
-      } else {
-        setError(data.errors?.email ? data.errors.email[0] : data.message || 'Error en les credencials');
-      }
+      login(response.data.token);
+      navigate('/');
     } catch (error) {
-      console.error('Error en el login:', error);
-      setError('Error en el servidor. Torna-ho a intentar més tard.');
+      setError(error.response?.data?.errors?.email ? error.response.data.errors.email[0] : error.response?.data?.message || 'Error en les credencials');
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -69,10 +62,10 @@ const Login = () => {
             required
           />
         </div>
-        <button 
-          type="submit" 
-          className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-green-600 hover:text-white transition" 
-          disabled={isLoading} 
+        <button
+          type="submit"
+          className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-green-600 hover:text-white transition"
+          disabled={isLoading}
         >
           {isLoading ? 'Iniciant sessió...' : 'Inicia sessió'}
         </button>
@@ -81,7 +74,7 @@ const Login = () => {
           <Link to="/forgot-password" className="text-white ">He oblidat la contrasenya</Link>
         </div>
         <div className="mt-10">
-          <span className="text-white font-bold">¿ Encara no tens usuari ? <br></br></span>
+          <span className="text-white font-bold">¿ Encara no tens usuari ? <br /></span>
           <button
             type="button"
             onClick={() => navigate('/register')}
