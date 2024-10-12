@@ -8,6 +8,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import BookDetail from './pages/BookDetails';
 import ChatList from './pages/ChatList';
+import ChatPage from './pages/ChatPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/llibre/:id" element={<BookDetail />} />
           <Route path="/chatlist/:id" element={<ChatList />} />
+          <Route path="/chat" element={<ChatPage />} />
         </Routes>
       </main>
       <Footer /> 

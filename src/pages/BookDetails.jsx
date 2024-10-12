@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; 
-import axios from 'axios'; 
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const BookDetail = () => {
   const { id } = useParams(); 
   const [llibre, setLlibre] = useState(null);
+  const [user, setUser] = useState(null); 
   const navigate = useNavigate(); 
 
   useEffect(() => {
@@ -17,17 +18,32 @@ const BookDetail = () => {
       }
     };
 
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const userResponse = await axios.get('http://localhost:8000/api/user', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUser(userResponse.data); 
+        }
+      } catch (error) {
+        console.error('Error al obtener el usuario:', error);
+      }
+    };
+
     fetchLlibre();
+    fetchUser();
   }, [id]);
 
   const handleSolicitar = () => {
-    const token = localStorage.getItem('authToken'); 
-
-    if (!token) {
-      localStorage.setItem('redirectAfterLogin', window.location.pathname); 
+    if (!localStorage.getItem('authToken')) {
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
       navigate('/login');
     } else {
-      alert(`Contactar amb l'usuari: ${llibre.user.name}`);
+      navigate('/chat', { state: { llibre, user } });
     }
   };
 
