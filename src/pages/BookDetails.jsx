@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; 
+import axios from 'axios'; 
 
 const BookDetail = () => {
   const { id } = useParams(); 
   const [llibre, setLlibre] = useState(null);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchLlibre = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/llibredetext/${id}`);
-        const data = await response.json();
-        setLlibre(data);
+        const response = await axios.get(`http://localhost:8000/api/llibredetext/${id}`);
+        setLlibre(response.data);
       } catch (error) {
         console.error('Error al obtenir els detalls del llibre:', error);
       }
@@ -18,6 +19,17 @@ const BookDetail = () => {
 
     fetchLlibre();
   }, [id]);
+
+  const handleSolicitar = () => {
+    const token = localStorage.getItem('authToken'); 
+
+    if (!token) {
+      localStorage.setItem('redirectAfterLogin', window.location.pathname); 
+      navigate('/login');
+    } else {
+      alert(`Contactar amb l'usuari: ${llibre.user.name}`);
+    }
+  };
 
   if (!llibre) {
     return <div>Carregant...</div>;
@@ -29,10 +41,10 @@ const BookDetail = () => {
       <p><strong>Categoria:</strong> {llibre.category.name}</p>
       <p><strong>Curs:</strong> {llibre.curs}</p>
       <p><strong>Editorial:</strong> {llibre.editorial}</p>
-      
       <p><strong>Observacions:</strong> {llibre.observacions}</p>
+
       <button 
-        onClick={() => alert(`Contactar amb l'usuari: ${llibre.user.name}`)} 
+        onClick={handleSolicitar} 
         className="bg-darkRed text-white px-4 py-2 mt-4 rounded"
       >
         Sol·licitar
