@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';  // No necesitamos 'Link' ahora
 import { FaBook } from 'react-icons/fa';
 import { getColorByCourse } from '../utils/colors'; 
 
@@ -21,20 +21,12 @@ const Home = () => {
     fetchLlibres();
   }, []);
 
+  // La función solo navega a los detalles sin verificar el token
   const handleBookClick = (id) => {
-    const token = localStorage.getItem('authToken');  
-    console.log('Token en localStorage:', token);  
-  
-    if (!token) {
-      console.log('Usuario no logueado, redirigiendo al login');
-      navigate('/login');
-    } else {
-      console.log('Usuario logueado, mostrando detalles del libro');
-      navigate(`/llibre/${id}`);
-    }
+    console.log('Navegando a los detalles del libro');
+    navigate(`/llibre/${id}`);
   };
   
-
   return (
     <div className="p-4 mb-24">
       <div className="max-w-screen-xl mx-auto">

@@ -52,7 +52,7 @@ const ChatPage = () => {
         {chatMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.user === 'Tú' ? 'chat-end' : 'chat-start'}`}>
             <div
-              className={`chat-bubble ${msg.user === 'Tú' ? 'bg-green-600 text-white' : 'bg-gray-300 text-black'}`}
+              className={`chat-bubble ${msg.user === 'Tú' ? 'bg-green-300 text-black' : 'bg-gray-300 text-black'}`}
             >
               {msg.text}
             </div>
@@ -71,9 +71,9 @@ const ChatPage = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="btn bg-green-700 hover:bg-green-600 text-white p-1 rounded-full flex items-center justify-center w-12 h-12"
+            className="btn bg-green-500 hover:bg-green-600 text-white p-1 rounded-full flex items-center justify-center w-12 h-12"
           >
-            <PlayIcon className="h-4 w-4 text-white" />
+            <PlayIcon className="h-6 w-6 text-white" />
           </button>
 
         </div>

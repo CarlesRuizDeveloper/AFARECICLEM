@@ -14,7 +14,7 @@ const BookDetail = () => {
         const response = await axios.get(`http://localhost:8000/api/llibredetext/${id}`);
         setLlibre(response.data);
       } catch (error) {
-        console.error('Error al obtenir els detalls del llibre:', error);
+        console.error('Error al obtener los detalles del libro:', error);
       }
     };
 
@@ -27,7 +27,7 @@ const BookDetail = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-          setUser(userResponse.data); 
+          setUser(userResponse.data);
         }
       } catch (error) {
         console.error('Error al obtener el usuario:', error);
@@ -39,10 +39,13 @@ const BookDetail = () => {
   }, [id]);
 
   const handleSolicitar = () => {
-    if (!localStorage.getItem('authToken')) {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      // Si no hay token, redirigir al login
       localStorage.setItem('redirectAfterLogin', window.location.pathname);
       navigate('/login');
     } else {
+      // Si el usuario está logueado, navega al chat
       navigate('/chat', { state: { llibre, user } });
     }
   };
