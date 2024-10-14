@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBook } from 'react-icons/fa';
-import { getColorByCourse } from '../utils/colors';
-import axios from 'axios';
+import { getColorByCourse } from '../utils/colors'; 
 
 const Home = () => {
   const [llibres, setLlibres] = useState([]);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchLlibres = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/llibredetext');
-        setLlibres(response.data);
+        const response = await fetch('http://localhost:8000/api/llibredetext');
+        const data = await response.json();
+        setLlibres(data);
       } catch (error) {
         console.error('Error al obtenir els llibres:', error);
       }
@@ -19,6 +20,20 @@ const Home = () => {
 
     fetchLlibres();
   }, []);
+
+  const handleBookClick = (id) => {
+    const token = localStorage.getItem('authToken');  
+    console.log('Token en localStorage:', token);  
+  
+    if (!token) {
+      console.log('Usuario no logueado, redirigiendo al login');
+      navigate('/login');
+    } else {
+      console.log('Usuario logueado, mostrando detalles del libro');
+      navigate(`/llibre/${id}`);
+    }
+  };
+  
 
   return (
     <div className="p-4 mb-24">
@@ -29,10 +44,10 @@ const Home = () => {
           {llibres.map((llibre) => {
             const { bgColor, textColor, iconColor } = getColorByCourse(llibre.curs);
             return (
-              <Link
-                to={`/llibre/${llibre.id}`}
+              <div
+                onClick={() => handleBookClick(llibre.id)} 
                 key={llibre.id}
-                className="border border-gray-300 p-4 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 bg-white"
+                className="cursor-pointer border border-gray-300 p-4 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 bg-white"
               >
                 <div className={`flex items-center justify-center ${bgColor} ${textColor} text-center text-sm font-semibold rounded-full py-1 mb-3`}>
                   <FaBook className={`h-4 w-4 mr-2 ${iconColor}`} />
@@ -45,7 +60,7 @@ const Home = () => {
                 <p className="text-gray-700">
                   <strong>Editorial:</strong> {llibre.editorial}
                 </p>
-              </Link>
+              </div>
             );
           })}
         </div>

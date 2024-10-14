@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -9,17 +8,18 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      navigate('/login');
+      navigate('/login'); 
     } else {
-      axios.get('http://localhost:8000/api/user', {
+      fetch('http://localhost:8000/api/user', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-      .then((response) => setUser(response.data))
-      .catch(() => {
-        navigate('/login');
-      });
+        .then((response) => response.json())
+        .then((data) => setUser(data))
+        .catch(() => {
+          navigate('/login');
+        });
     }
   }, [navigate]);
 

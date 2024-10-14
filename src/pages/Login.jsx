@@ -14,6 +14,8 @@ const Login = () => {
     setError('');
     setIsLoading(true);
 
+    localStorage.removeItem('authToken');
+
     try {
       const response = await axios.post('http://localhost:8000/api/login', {
         email,
@@ -25,10 +27,10 @@ const Login = () => {
 
         const redirectUrl = localStorage.getItem('redirectAfterLogin');
         if (redirectUrl) {
-          localStorage.removeItem('redirectAfterLogin'); 
+          localStorage.removeItem('redirectAfterLogin');
           navigate(redirectUrl);
         } else {
-          navigate('/'); 
+          navigate('/');
         }
       } else {
         setError('Credenciales incorrectas');
@@ -76,10 +78,11 @@ const Login = () => {
         <button 
           type="submit" 
           className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-green-600 hover:text-white transition" 
-          disabled={isLoading} 
+          disabled={isLoading}
         >
           {isLoading ? 'Iniciant sessió...' : 'Inicia sessió'}
         </button>
+
         <div className="mt-4 flex justify-between">
           <Link to="/forgot-password" className="text-white">He oblidat la contrasenya</Link>
         </div>
