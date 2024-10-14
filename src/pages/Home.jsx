@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBook } from 'react-icons/fa';
-import { getColorByCourse } from '../utils/colors'; 
+import { getColorByCourse } from '../utils/colors';
+import axios from 'axios';
 
 const Home = () => {
   const [llibres, setLlibres] = useState([]);
@@ -9,9 +10,8 @@ const Home = () => {
   useEffect(() => {
     const fetchLlibres = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/llibredetext');
-        const data = await response.json();
-        setLlibres(data);
+        const response = await axios.get('http://localhost:8000/api/llibredetext');
+        setLlibres(response.data);
       } catch (error) {
         console.error('Error al obtenir els llibres:', error);
       }

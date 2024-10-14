@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; 
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 const Login = () => {
@@ -7,6 +8,9 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,6 +21,7 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:8000/api/login', {
         email,
+
         password
       });
 
@@ -36,6 +41,14 @@ const Login = () => {
     } catch (error) {
       setError('Error al iniciar sesión. Intenta nuevamente.');
       console.error(error);
+        password,
+      });
+
+      login(response.data.token);
+      navigate('/');
+    } catch (error) {
+      setError(error.response?.data?.errors?.email ? error.response.data.errors.email[0] : error.response?.data?.message || 'Error en les credencials');
+
     } finally {
       setIsLoading(false);
     }
@@ -73,10 +86,17 @@ const Login = () => {
           />
         </div>
 
+
         <button 
           type="submit" 
           className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-green-600 hover:text-white transition" 
           disabled={isLoading} 
+
+        <button
+          type="submit"
+          className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-green-600 hover:text-white transition"
+          disabled={isLoading}
+
         >
           {isLoading ? 'Iniciant sessió...' : 'Inicia sessió'}
         </button>
@@ -84,7 +104,11 @@ const Login = () => {
           <Link to="/forgot-password" className="text-white">He oblidat la contrasenya</Link>
         </div>
         <div className="mt-10">
+
           <span className="text-white font-bold">¿Encara no tens usuari? <br /></span>
+
+          <span className="text-white font-bold">¿ Encara no tens usuari ? <br /></span>
+
           <button
             type="button"
             onClick={() => navigate('/register')}

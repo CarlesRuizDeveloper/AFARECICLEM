@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const BookDetail = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [llibre, setLlibre] = useState(null);
   const [user, setUser] = useState(null); 
   const navigate = useNavigate(); 

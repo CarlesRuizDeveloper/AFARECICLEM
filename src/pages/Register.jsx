@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -16,26 +17,16 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          password_confirmation: passwordConfirmation
-        }),
+      const response = await axios.post('http://localhost:8000/api/register', {
+        name,
+        email,
+        password,
+        password_confirmation: passwordConfirmation
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.errors?.email ? data.errors.email[0] : data.message || 'Error en el registre');
-      }
 
       navigate('/login');
     } catch (error) {
-      setError(error.message || 'Error en el servidor. Torna-ho a intentar més tard.');
+      setError(error.response?.data?.errors?.email ? error.response.data.errors.email[0] : error.response?.data?.message || 'Error en el registre');
     } finally {
       setIsLoading(false);
     }
@@ -43,11 +34,13 @@ const Register = () => {
 
   return (
     <div className="flex justify-center items-center h-screen">
+
       <form onSubmit={handleSubmit} className=" mt-10 bg-gradient-to-b from-darkRed to-softRed text-white p-6 rounded-md shadow-md w-80">
+
         <h2 className="text-2xl mb-4">Registre</h2>
 
         {error && (
-          <div className=" mb-4 text-black font-bold">
+          <div className="mb-4 text-black font-bold">
             {error}
           </div>
         )}
