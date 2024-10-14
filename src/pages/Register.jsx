@@ -42,8 +42,8 @@ const Register = () => {
   };
 
   return (
-<div className="flex justify-center items-center h-screen">
-<form onSubmit={handleSubmit} className=" mt-10 bg-gradient-to-b from-darkRed to-softRed text-white p-6 rounded-md shadow-md w-80">
+    <div className="flex justify-center items-center h-screen">
+      <form onSubmit={handleSubmit} className=" mt-10 bg-gradient-to-b from-darkRed to-softRed text-white p-6 rounded-md shadow-md w-80">
         <h2 className="text-2xl mb-4">Registre</h2>
 
         {error && (

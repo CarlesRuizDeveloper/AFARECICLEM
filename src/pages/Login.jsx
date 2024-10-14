@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Asegúrate de importar Link para las rutas de "forgot-password" y "register"
+import { useNavigate, Link } from 'react-router-dom'; 
 import axios from 'axios';
 
 const Login = () => {
@@ -21,16 +21,14 @@ const Login = () => {
       });
 
       if (response.status === 200) {
-        // Almacenar el token en localStorage
         localStorage.setItem('authToken', response.data.token);
 
-        // Redirigir a la página donde estaba el usuario
         const redirectUrl = localStorage.getItem('redirectAfterLogin');
         if (redirectUrl) {
-          localStorage.removeItem('redirectAfterLogin'); // Limpiar la URL guardada
+          localStorage.removeItem('redirectAfterLogin'); 
           navigate(redirectUrl);
         } else {
-          navigate('/'); // Si no hay URL, redirigir a la home
+          navigate('/'); 
         }
       } else {
         setError('Credenciales incorrectas');
@@ -82,13 +80,9 @@ const Login = () => {
         >
           {isLoading ? 'Iniciant sessió...' : 'Inicia sessió'}
         </button>
-
-        {/* Añadir el link para "He oblidat la contrasenya" */}
         <div className="mt-4 flex justify-between">
           <Link to="/forgot-password" className="text-white">He oblidat la contrasenya</Link>
         </div>
-
-        {/* Añadir la opción de registro */}
         <div className="mt-10">
           <span className="text-white font-bold">¿Encara no tens usuari? <br /></span>
           <button
