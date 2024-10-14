@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom'; 
-import { PaperAirplaneIcon } from '@heroicons/react/24/solid'; 
+import { useLocation } from 'react-router-dom';
+import { PlayIcon } from '@heroicons/react/24/solid';
 
 const ChatPage = () => {
   const location = useLocation();
@@ -39,12 +39,12 @@ const ChatPage = () => {
       <div className="fixed top-[64px] left-0 w-full z-10 flex justify-center">
         <div className="bg-darkRed text-white shadow-lg max-w-2xl w-full p-7 rounded-b-lg flex flex-col items-center">
           <p className="text-center">
-            <strong> {llibre.titol} </strong><br/>
+            <strong> {llibre.titol} </strong><br />
             <strong> {llibre.curs}</strong>
           </p>
           <div className="flex justify-between w-full mt-2">
             <p className="self-start">{llibre.user.name}</p>
-            <p className="self-end">{user?.name}</p>
+            <p className="self-end text-green-300">{user?.name}</p>
           </div>
         </div>
       </div>
@@ -52,13 +52,13 @@ const ChatPage = () => {
         {chatMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.user === 'Tú' ? 'chat-end' : 'chat-start'}`}>
             <div
-              className={`chat-bubble ${msg.user === 'Tú' ? 'bg-green-600 text-white' : 'bg-gray-300 text-black'}`} 
+              className={`chat-bubble ${msg.user === 'Tú' ? 'bg-green-600 text-white' : 'bg-gray-300 text-black'}`}
             >
               {msg.text}
             </div>
           </div>
         ))}
-        <div ref={messagesEndRef} /> 
+        <div ref={messagesEndRef} />
       </div>
       <div className="fixed bottom-16 left-0 w-full bg-white shadow-lg p-4">
         <div className="max-w-2xl mx-auto flex items-center space-x-4">
@@ -71,10 +71,11 @@ const ChatPage = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="btn btn-primary p-2 rounded-full flex items-center justify-center w-20"
+            className="btn bg-green-700 hover:bg-green-600 text-white p-1 rounded-full flex items-center justify-center w-12 h-12"
           >
-            <PaperAirplaneIcon className="h-6 w-6 text-white" />
+            <PlayIcon className="h-4 w-4 text-white" />
           </button>
+
         </div>
       </div>
     </div>
