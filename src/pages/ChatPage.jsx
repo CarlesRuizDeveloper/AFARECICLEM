@@ -52,7 +52,7 @@ const ChatPage = () => {
         {chatMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.user === 'Tú' ? 'chat-end' : 'chat-start'}`}>
             <div
-              className={`chat-bubble ${msg.user === 'Tú' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`} 
+              className={`chat-bubble ${msg.user === 'Tú' ? 'bg-green-600 text-white' : 'bg-gray-300 text-black'}`} 
             >
               {msg.text}
             </div>
@@ -71,9 +71,9 @@ const ChatPage = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="btn btn-primary p-2 rounded-full flex items-center justify-center"
+            className="btn btn-primary p-2 rounded-full flex items-center justify-center w-20"
           >
-            <PaperAirplaneIcon className="h-6 w-6 text-white transform rotate-90" />
+            <PaperAirplaneIcon className="h-6 w-6 text-white" />
           </button>
         </div>
       </div>
