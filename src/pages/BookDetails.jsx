@@ -5,8 +5,8 @@ import axios from 'axios';
 const BookDetail = () => {
   const { id } = useParams();
   const [llibre, setLlibre] = useState(null);
-  const [user, setUser] = useState(null); 
-  const navigate = useNavigate(); 
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLlibre = async () => {
@@ -38,24 +38,46 @@ const BookDetail = () => {
     fetchUser();
   }, [id]);
 
-  const handleSolicitar = () => {
+  const handleSolicitar = async () => {
     const token = localStorage.getItem('authToken');
-    if (!token) {
-      // Si no hay token, redirigir al login
-      localStorage.setItem('redirectAfterLogin', window.location.pathname);
+    const userId = user?.id || null;  // ID del usuario autenticado
+  
+    if (!token || !userId) {
       navigate('/login');
-    } else {
-      // Si el usuario está logueado, navega al chat
-      navigate('/chat', { state: { llibre, user } });
+      return;
+    }
+  
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/api/chat/create',
+        {
+          user_2_id: llibre.user.id,  // Usuario propietario del libro
+          llibre_id: llibre.id        // ID del libro
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Si el chat se crea correctamente, redirigir al chat
+      navigate('/chat', { state: { llibre, user, chat_id: response.data.id } });
+    } catch (error) {
+      console.error('Error al crear el chat:', error.response ? error.response.data : error.message);
     }
   };
+  
+  
+  
+  
 
   if (!llibre) {
     return <div>Carregant...</div>;
   }
 
   return (
-    <div className="max-w-screen-xl mx-auto p-4 mt-56">
+    <div className="max-w-screen-xl mx-auto p-4 mt-56 flex flex-col items-center justify-center text-center">
       <h1 className="text-2xl font-bold mb-4">{llibre.titol}</h1>
       <p><strong>Categoria:</strong> {llibre.category.name}</p>
       <p><strong>Curs:</strong> {llibre.curs}</p>

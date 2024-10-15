@@ -1,27 +1,64 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PlayIcon } from '@heroicons/react/24/solid';
+import axios from 'axios';
 
 const ChatPage = () => {
   const location = useLocation();
-  const { llibre, user } = location.state || {};
+  const { llibre, user, chat_id } = location.state || {}; // Verificamos que se obtienen correctamente chat_id, llibre y user
   const messagesEndRef = useRef(null);
 
-  const initialMessages = [
-    { user: 'Propietari', text: 'Hola! Vols informació sobre el llibre?' },
-    { user: 'Tú', text: 'Sí, m’interessa saber més del curs.' }
-  ];
-
-  const [chatMessages, setChatMessages] = useState(initialMessages);
+  const [chatMessages, setChatMessages] = useState([]);
   const [message, setMessage] = useState('');
 
-  const handleSendMessage = () => {
+  // Obtener los mensajes del chat al cargar la página
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/chats/${chat_id}/messages`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
+        });
+        setChatMessages(response.data); // Guardamos los mensajes recibidos en el estado
+      } catch (error) {
+        console.error('Error al obtener los mensajes del chat:', error.response ? error.response.data : error.message);
+      }
+    };
+
+    if (chat_id) {
+      fetchMessages();
+    }
+  }, [chat_id]);
+
+  // Manejar el envío de mensajes
+  const handleSendMessage = async () => {
     if (message.trim() !== '') {
-      setChatMessages([...chatMessages, { user: 'Tú', text: message }]);
-      setMessage('');
+      try {
+        const response = await axios.post(
+          'http://localhost:8000/api/message/send-message',
+          {
+            chat_id: chat_id, // Usamos el chat_id correcto aquí
+            sender_id: user.id,
+            message: message,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            },
+          }
+        );
+
+        setChatMessages([...chatMessages, response.data]); // Agregar el nuevo mensaje al estado
+        setMessage(''); // Limpiar el campo de texto
+        scrollToBottom(); // Hacer scroll al último mensaje
+      } catch (error) {
+        console.error('Error al enviar el mensaje:', error.response ? error.response.data : error.message);
+      }
     }
   };
 
+  // Hacer scroll al final del chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -30,8 +67,8 @@ const ChatPage = () => {
     scrollToBottom();
   }, [chatMessages]);
 
-  if (!llibre || !user) {
-    return <div>No s'han trobat les dades del llibre o usuari.</div>;
+  if (!llibre || !user || !chat_id) {
+    return <div>No s'han trobat les dades del llibre, usuari o chat.</div>;
   }
 
   return (
@@ -48,18 +85,18 @@ const ChatPage = () => {
           </div>
         </div>
       </div>
+
       <div className="flex flex-col flex-1 max-w-2xl mx-auto w-full overflow-y-auto p-4 mb-36" style={{ paddingTop: '200px' }}>
         {chatMessages.map((msg, index) => (
-          <div key={index} className={`chat ${msg.user === 'Tú' ? 'chat-end' : 'chat-start'}`}>
-            <div
-              className={`chat-bubble ${msg.user === 'Tú' ? 'bg-green-300 text-black' : 'bg-gray-300 text-black'}`}
-            >
-              {msg.text}
+          <div key={index} className={`chat ${msg.sender_id === user.id ? 'chat-end' : 'chat-start'}`}>
+            <div className={`chat-bubble ${msg.sender_id === user.id ? 'bg-green-300 text-black' : 'bg-gray-300 text-black'}`}>
+              {msg.message}
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
+
       <div className="fixed bottom-16 left-0 w-full bg-white shadow-lg p-4">
         <div className="max-w-2xl mx-auto flex items-center space-x-4">
           <input
@@ -75,7 +112,6 @@ const ChatPage = () => {
           >
             <PlayIcon className="h-6 w-6 text-white" />
           </button>
-
         </div>
       </div>
     </div>
