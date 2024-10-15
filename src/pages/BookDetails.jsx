@@ -9,6 +9,7 @@ const BookDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Obtener detalles del libro
     const fetchLlibre = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/llibredetext/${id}`);
@@ -18,6 +19,7 @@ const BookDetail = () => {
       }
     };
 
+    // Obtener el usuario autenticado
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('authToken');
@@ -40,37 +42,41 @@ const BookDetail = () => {
 
   const handleSolicitar = async () => {
     const token = localStorage.getItem('authToken');
-    const userId = user?.id || null;  // ID del usuario autenticado
-  
-    if (!token || !userId) {
+    if (!token) {
+      // Si no hay token, redirigir a la página de login
+      localStorage.setItem('redirectAfterLogin', window.location.pathname);
       navigate('/login');
-      return;
-    }
-  
-    try {
-      const response = await axios.post(
-        'http://localhost:8000/api/chat/create',
-        {
-          user_2_id: llibre.user.id,  // Usuario propietario del libro
-          llibre_id: llibre.id        // ID del libro
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    } else {
+      // Crear un chat antes de redirigir
+      try {
+        const response = await axios.post(
+          'http://localhost:8000/api/chat/create',
+          {
+            user_1_id: user.id,  // Usuario autenticado
+            user_2_id: llibre.user.id,  // Usuario propietario del libro
+            llibre_id: llibre.id,  // ID del libro
           },
-        }
-      );
-  
-      // Si el chat se crea correctamente, redirigir al chat
-      navigate('/chat', { state: { llibre, user, chat_id: response.data.id } });
-    } catch (error) {
-      console.error('Error al crear el chat:', error.response ? error.response.data : error.message);
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Redirigir a la página del chat si el chat se crea correctamente
+        const chatData = {
+          chat_id: response.data.id,
+          llibre: llibre,
+          user1: user,  // Usuario autenticado
+          user2: llibre.user,  // Usuario propietario del libro
+        };
+
+        navigate('/chat', { state: chatData });
+      } catch (error) {
+        console.error('Error al crear el chat:', error.response ? error.response.data : error.message);
+      }
     }
   };
-  
-  
-  
-  
 
   if (!llibre) {
     return <div>Carregant...</div>;

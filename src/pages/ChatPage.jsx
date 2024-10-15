@@ -1,45 +1,105 @@
+// ChatPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 
 const ChatPage = () => {
   const location = useLocation();
-  const { llibre, user, chat_id } = location.state || {}; // Verificamos que se obtienen correctamente chat_id, llibre y user
-  const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
+  const { chat_id, llibre, user1, user2 } = location.state || {};
+  const [authUser, setAuthUser] = useState(null);
+  const [otherUser, setOtherUser] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const messagesEndRef = useRef(null);
+  const pollingInterval = useRef(null);
+  const inactivityTimeout = useRef(null);
 
-  // Obtener los mensajes del chat al cargar la página
-  useEffect(() => {
-    const fetchMessages = async () => {
+  // Función para iniciar el polling
+  const startPolling = () => {
+    stopPolling(); // Limpiar cualquier intervalo de polling existente antes de crear uno nuevo
+    pollingInterval.current = setInterval(async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/chats/${chat_id}/messages`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`,
           },
         });
-        setChatMessages(response.data); // Guardamos los mensajes recibidos en el estado
+        setChatMessages(response.data);
+        resetInactivityTimeout(); // Reiniciar el tiempo de inactividad al recibir nuevos mensajes
       } catch (error) {
         console.error('Error al obtener los mensajes del chat:', error.response ? error.response.data : error.message);
       }
+    }, 5000); // Polling cada 5 segundos
+  };
+
+  // Función para detener el polling
+  const stopPolling = () => {
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+    }
+  };
+
+  // Configuración del timeout para detectar inactividad
+  const resetInactivityTimeout = () => {
+    if (inactivityTimeout.current) {
+      clearTimeout(inactivityTimeout.current);
+    }
+    inactivityTimeout.current = setTimeout(() => {
+      console.log('Inactividad detectada, redirigiendo a la página principal');
+      navigate('/'); // Redirigir a la página principal después de 2 minutos sin actividad
+    }, 120000); // 120000 ms = 2 minutos
+  };
+
+  // Cargar el usuario autenticado y determinar el otro usuario en el chat
+  useEffect(() => {
+    const fetchAuthUser = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get('http://localhost:8000/api/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setAuthUser(response.data);
+
+        // Determinar quién es el otro usuario en el chat
+        if (response.data.id === user1.id) {
+          setOtherUser(user2);
+        } else {
+          setOtherUser(user1);
+        }
+      } catch (error) {
+        console.error('Error al obtener el usuario autenticado:', error);
+      }
     };
 
-    if (chat_id) {
-      fetchMessages();
+    if (!chat_id || !user1 || !user2 || !llibre) {
+      console.error('Faltan datos esenciales para mostrar el chat');
+      navigate('/chats');
+    } else {
+      fetchAuthUser();
+      startPolling(); // Empezar el polling al cargar el chat
+      resetInactivityTimeout(); // Configurar la detección de inactividad
     }
-  }, [chat_id]);
+
+    return () => {
+      stopPolling(); // Detener el polling al salir de la página
+      clearTimeout(inactivityTimeout.current); // Limpiar el timeout de inactividad
+    };
+  }, [chat_id, user1, user2, llibre, navigate]);
 
   // Manejar el envío de mensajes
   const handleSendMessage = async () => {
-    if (message.trim() !== '') {
+    if (message.trim() !== '' && authUser) {
       try {
         const response = await axios.post(
           'http://localhost:8000/api/message/send-message',
           {
-            chat_id: chat_id, // Usamos el chat_id correcto aquí
-            sender_id: user.id,
+            chat_id: chat_id,
+            sender_id: authUser.id,
             message: message,
           },
           {
@@ -49,9 +109,9 @@ const ChatPage = () => {
           }
         );
 
-        setChatMessages([...chatMessages, response.data]); // Agregar el nuevo mensaje al estado
-        setMessage(''); // Limpiar el campo de texto
-        scrollToBottom(); // Hacer scroll al último mensaje
+        setChatMessages([...chatMessages, response.data]);
+        setMessage('');
+        scrollToBottom();
       } catch (error) {
         console.error('Error al enviar el mensaje:', error.response ? error.response.data : error.message);
       }
@@ -67,12 +127,13 @@ const ChatPage = () => {
     scrollToBottom();
   }, [chatMessages]);
 
-  if (!llibre || !user || !chat_id) {
+  if (!llibre || !authUser || !otherUser) {
     return <div>No s'han trobat les dades del llibre, usuari o chat.</div>;
   }
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
+      {/* Encabezado del chat */}
       <div className="fixed top-[64px] left-0 w-full z-10 flex justify-center">
         <div className="bg-darkRed text-white shadow-lg max-w-2xl w-full p-7 rounded-b-lg flex flex-col items-center">
           <p className="text-center">
@@ -80,16 +141,21 @@ const ChatPage = () => {
             <strong> {llibre.curs}</strong>
           </p>
           <div className="flex justify-between w-full mt-2">
-            <p className="self-start">{llibre.user.name}</p>
-            <p className="self-end text-green-300">{user?.name}</p>
+            <p className="self-start">{otherUser.name}</p>
+            <p className="self-end text-green-300">{authUser.name}</p>
           </div>
         </div>
       </div>
 
+      {/* Mensajes del chat usando DaisyUI para las burbujas */}
       <div className="flex flex-col flex-1 max-w-2xl mx-auto w-full overflow-y-auto p-4 mb-36" style={{ paddingTop: '200px' }}>
         {chatMessages.map((msg, index) => (
-          <div key={index} className={`chat ${msg.sender_id === user.id ? 'chat-end' : 'chat-start'}`}>
-            <div className={`chat-bubble ${msg.sender_id === user.id ? 'bg-green-300 text-black' : 'bg-gray-300 text-black'}`}>
+          <div key={index} className={`chat ${msg.sender_id === authUser.id ? 'chat-end' : 'chat-start'}`}>
+            <div
+              className={`chat-bubble ${
+                msg.sender_id === authUser.id ? 'bg-green-700 text-white' : 'bg-gray-500 text-white'
+              }`}
+            >
               {msg.message}
             </div>
           </div>
@@ -97,6 +163,7 @@ const ChatPage = () => {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Input para enviar mensajes */}
       <div className="fixed bottom-16 left-0 w-full bg-white shadow-lg p-4">
         <div className="max-w-2xl mx-auto flex items-center space-x-4">
           <input

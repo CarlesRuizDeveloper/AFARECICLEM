@@ -24,7 +24,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/llibre/:id" element={<BookDetail />} />
-          <Route path="/chatlist/:id" element={<ChatList />} />
+          <Route path="/chats" element={<ChatList />} />
           <Route path="/chat" element={<ChatPage />} />
         </Routes>
       </main>
