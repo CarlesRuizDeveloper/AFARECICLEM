@@ -1,7 +1,7 @@
-// ChatPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { PlayIcon } from '@heroicons/react/24/solid';
+import { PlayIcon, XMarkIcon } from '@heroicons/react/24/solid'; 
+import { FaSpinner } from 'react-icons/fa'; 
 import axios from 'axios';
 
 const ChatPage = () => {
@@ -13,13 +13,13 @@ const ChatPage = () => {
   const [otherUser, setOtherUser] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
   const pollingInterval = useRef(null);
   const inactivityTimeout = useRef(null);
 
-  // Función para iniciar el polling
   const startPolling = () => {
-    stopPolling(); // Limpiar cualquier intervalo de polling existente antes de crear uno nuevo
+    stopPolling(); 
     pollingInterval.current = setInterval(async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/chats/${chat_id}/messages`, {
@@ -28,32 +28,30 @@ const ChatPage = () => {
           },
         });
         setChatMessages(response.data);
-        resetInactivityTimeout(); // Reiniciar el tiempo de inactividad al recibir nuevos mensajes
+        setLoading(false); 
+        resetInactivityTimeout(); 
       } catch (error) {
         console.error('Error al obtener los mensajes del chat:', error.response ? error.response.data : error.message);
       }
-    }, 5000); // Polling cada 5 segundos
+    }, 5000); 
   };
 
-  // Función para detener el polling
   const stopPolling = () => {
     if (pollingInterval.current) {
       clearInterval(pollingInterval.current);
     }
   };
 
-  // Configuración del timeout para detectar inactividad
   const resetInactivityTimeout = () => {
     if (inactivityTimeout.current) {
       clearTimeout(inactivityTimeout.current);
     }
     inactivityTimeout.current = setTimeout(() => {
       console.log('Inactividad detectada, redirigiendo a la página principal');
-      navigate('/'); // Redirigir a la página principal después de 2 minutos sin actividad
-    }, 120000); // 120000 ms = 2 minutos
+      navigate('/'); 
+    }, 120000); 
   };
 
-  // Cargar el usuario autenticado y determinar el otro usuario en el chat
   useEffect(() => {
     const fetchAuthUser = async () => {
       try {
@@ -65,7 +63,6 @@ const ChatPage = () => {
         });
         setAuthUser(response.data);
 
-        // Determinar quién es el otro usuario en el chat
         if (response.data.id === user1.id) {
           setOtherUser(user2);
         } else {
@@ -81,17 +78,16 @@ const ChatPage = () => {
       navigate('/chats');
     } else {
       fetchAuthUser();
-      startPolling(); // Empezar el polling al cargar el chat
-      resetInactivityTimeout(); // Configurar la detección de inactividad
+      startPolling(); 
+      resetInactivityTimeout(); 
     }
 
     return () => {
-      stopPolling(); // Detener el polling al salir de la página
-      clearTimeout(inactivityTimeout.current); // Limpiar el timeout de inactividad
+      stopPolling(); 
+      clearTimeout(inactivityTimeout.current); 
     };
   }, [chat_id, user1, user2, llibre, navigate]);
 
-  // Manejar el envío de mensajes
   const handleSendMessage = async () => {
     if (message.trim() !== '' && authUser) {
       try {
@@ -118,14 +114,12 @@ const ChatPage = () => {
     }
   };
 
-  // Manejar el evento de presionar Enter para enviar un mensaje
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }
   };
 
-  // Hacer scroll al final del chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -140,9 +134,14 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Encabezado del chat: sin margen en pantallas pequeñas y un poco de margen en pantallas grandes */}
       <div className="fixed left-0 w-full z-10 flex justify-center top-[64px] lg:top-[100px]">
-        <div className="bg-gray-700 text-white shadow-lg max-w-2xl w-full p-7 rounded-t-lg flex flex-col items-center">
+        <div className="bg-gray-700 text-white shadow-lg max-w-2xl w-full p-7 rounded-t-lg flex flex-col items-center relative">
+          <button
+            className="absolute right-4 top-4 flex items-center text-white hover:text-red-400 transition"
+            onClick={() => navigate('/chats')}
+          >
+            <XMarkIcon className=" bg-red-700 rounded-md mt-4 h-5 w-5" />
+          </button>
           <p className="text-center">
             <strong> {llibre.titol} </strong><br />
             <strong> {llibre.curs}</strong>
@@ -153,24 +152,26 @@ const ChatPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Mensajes del chat usando DaisyUI para las burbujas */}
       <div className="bg-gray-300 flex flex-col max-w-2xl mx-auto w-full overflow-y-auto p-4 mt-[150px] lg:mt-[180px] mb-[140px] flex-grow">
-        {chatMessages.map((msg, index) => (
-          <div key={index} className={`chat ${msg.sender_id === authUser.id ? 'chat-end' : 'chat-start'}`}>
-            <div
-              className={`chat-bubble ${
-                msg.sender_id === authUser.id ? 'bg-green-700 text-white' : 'bg-gray-500 text-white'
-              }`}
-            >
-              {msg.message}
-            </div>
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <FaSpinner className="animate-spin h-8 w-8 text-red-700" />
           </div>
-        ))}
+        ) : (
+          chatMessages.map((msg, index) => (
+            <div key={index} className={`chat ${msg.sender_id === authUser.id ? 'chat-end' : 'chat-start'}`}>
+              <div
+                className={`chat-bubble ${
+                  msg.sender_id === authUser.id ? 'bg-green-700 text-white' : 'bg-gray-500 text-white'
+                }`}
+              >
+                {msg.message}
+              </div>
+            </div>
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
-
-      {/* Input para enviar mensajes, pegado al final del contenedor */}
       <div className="fixed bottom-16 left-0 w-full lg:bottom-[70px]">
         <div className="max-w-2xl mx-auto bg-gray-300 shadow-lg rounded-b-lg p-4 flex items-center space-x-4">
           <input
@@ -179,7 +180,7 @@ const ChatPage = () => {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Escriu el teu missatge..."
             className="input input-bordered w-full"
-            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} // Enviar mensaje con Enter
+            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
           />
           <button
             onClick={handleSendMessage}
