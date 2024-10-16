@@ -118,6 +118,13 @@ const ChatPage = () => {
     }
   };
 
+  // Manejar el evento de presionar Enter para enviar un mensaje
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
   // Hacer scroll al final del chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -133,9 +140,9 @@ const ChatPage = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Encabezado del chat */}
-      <div className="fixed top-[64px] left-0 w-full z-10 flex justify-center">
-        <div className="bg-darkRed text-white shadow-lg max-w-2xl w-full p-7 rounded-b-lg flex flex-col items-center">
+      {/* Encabezado del chat: sin margen en pantallas pequeñas y un poco de margen en pantallas grandes */}
+      <div className="fixed left-0 w-full z-10 flex justify-center top-[64px] lg:top-[100px]">
+        <div className="bg-gray-700 text-white shadow-lg max-w-2xl w-full p-7 rounded-t-lg flex flex-col items-center">
           <p className="text-center">
             <strong> {llibre.titol} </strong><br />
             <strong> {llibre.curs}</strong>
@@ -148,7 +155,7 @@ const ChatPage = () => {
       </div>
 
       {/* Mensajes del chat usando DaisyUI para las burbujas */}
-      <div className="flex flex-col flex-1 max-w-2xl mx-auto w-full overflow-y-auto p-4 mb-36" style={{ paddingTop: '200px' }}>
+      <div className="bg-gray-300 flex flex-col max-w-2xl mx-auto w-full overflow-y-auto p-4 mt-[150px] lg:mt-[180px] mb-[140px] flex-grow">
         {chatMessages.map((msg, index) => (
           <div key={index} className={`chat ${msg.sender_id === authUser.id ? 'chat-end' : 'chat-start'}`}>
             <div
@@ -163,15 +170,16 @@ const ChatPage = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input para enviar mensajes */}
-      <div className="fixed bottom-16 left-0 w-full bg-white shadow-lg p-4">
-        <div className="max-w-2xl mx-auto flex items-center space-x-4">
+      {/* Input para enviar mensajes, pegado al final del contenedor */}
+      <div className="fixed bottom-16 left-0 w-full lg:bottom-[70px]">
+        <div className="max-w-2xl mx-auto bg-gray-300 shadow-lg rounded-b-lg p-4 flex items-center space-x-4">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Escriu el teu missatge..."
             className="input input-bordered w-full"
+            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} // Enviar mensaje con Enter
           />
           <button
             onClick={handleSendMessage}
