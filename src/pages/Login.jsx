@@ -16,30 +16,25 @@ const Login = () => {
     setError('');
     setIsLoading(true);
 
-    // Removemos cualquier token antiguo
     localStorage.removeItem('authToken');
 
     try {
-      // Realizar la solicitud al servidor
       const response = await axios.post('http://localhost:8000/api/login', {
         email,
         password
       });
 
       if (response.status === 200) {
-        // Guardar el token de autenticación en localStorage
         localStorage.setItem('authToken', response.data.token);
 
-        // Comprobar si existe una URL de redirección guardada
         const redirectUrl = localStorage.getItem('redirectAfterLogin');
 
-        // Si existe una URL, redirigir a ella, si no, ir a la home
         if (redirectUrl) {
-          localStorage.removeItem('redirectAfterLogin');  // Eliminamos la URL guardada
-          console.log('Redirigiendo a:', redirectUrl);  // Verificamos qué URL está guardada
-          navigate(redirectUrl);  // Redirigir a la página que el usuario intentaba visitar
+          localStorage.removeItem('redirectAfterLogin');  
+          console.log('Redirigiendo a:', redirectUrl);  
+          navigate(redirectUrl);  
         } else {
-          navigate('/');  // Si no hay URL guardada, redirigir a la home
+          navigate('/');  
         }
       } else {
         setError('Credenciales incorrectas');
