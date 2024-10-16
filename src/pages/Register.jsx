@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [error, setError] = useState('');
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setErrors({});
     setIsLoading(true);
 
     try {
@@ -26,7 +29,12 @@ const Register = () => {
 
       navigate('/login');
     } catch (error) {
-      setError(error.response?.data?.errors?.email ? error.response.data.errors.email[0] : error.response?.data?.message || 'Error en el registre');
+      // Almacenar todos los errores en un objeto
+      if (error.response && error.response.data && error.response.data.errors) {
+        setErrors(error.response.data.errors);
+      } else {
+        setErrors({ general: 'Error en el registre. Intenta de nou.' });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -34,26 +42,29 @@ const Register = () => {
 
   return (
     <div className="flex justify-center items-center h-screen">
-
-      <form onSubmit={handleSubmit} className=" mt-10 bg-gradient-to-b from-darkRed to-softRed text-white p-6 rounded-md shadow-md w-80">
-
+      <form onSubmit={handleSubmit} className="mt-10 bg-gradient-to-b from-darkRed to-softRed text-white p-6 rounded-md shadow-md w-80">
         <h2 className="text-2xl mb-4">Registre</h2>
 
-        {error && (
+        {/* Mostrar errores generales */}
+        {errors.general && (
           <div className="mb-4 text-black font-bold">
-            {error}
+            {errors.general}
           </div>
         )}
 
+        {/* Mostrar errores específicos por campo */}
         <div className="mt-8 mb-4">
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-300 focus:border-none rounded"
             placeholder="Nom d'usuari"
             required
           />
+          {errors.name && (
+            <p className="text-yellow-300 text-xs mt-1">{errors.name[0]}</p>
+          )}
         </div>
 
         <div className="mb-4">
@@ -61,37 +72,60 @@ const Register = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-300 focus:border-none rounded"
             placeholder="Correu electrònic"
             required
           />
+          {errors.email && (
+            <p className="text-yellow-300 text-xs mt-1">{errors.email[0]}</p>
+          )}
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <input
-            type="password"
+            type={passwordVisible ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-300 focus:border-none rounded pr-10"
             placeholder="Clau d'accés"
             required
           />
+          <button
+            type="button"
+            onClick={() => setPasswordVisible(!passwordVisible)}
+            className="absolute right-2 top-2 text-gray-200 focus:outline-none"
+          >
+            {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+          </button>
+          {errors.password && (
+            <p className="text-yellow-300 text-xs mt-1">{errors.password[0]}</p>
+          )}
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <input
-            type="password"
+            type={confirmPasswordVisible ? 'text' : 'password'}
             value={passwordConfirmation}
             onChange={(e) => setPasswordConfirmation(e.target.value)}
-            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-400 focus:border-none rounded"
+            className="w-full p-2 bg-mediumRed text-gray-300 placeholder-gray-300 focus:border-none rounded pr-10"
             placeholder="Confirma la clau d'accés"
             required
           />
+          <button
+            type="button"
+            onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+            className="absolute right-2 top-2 text-gray-200 focus:outline-none"
+          >
+            {confirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+          </button>
+          {errors.password_confirmation && (
+            <p className="text-yellow-300 text-xs mt-1">{errors.password_confirmation[0]}</p>
+          )}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-green-600 hover:text-white transition"
+          className="w-full bg-white text-darkRed font-bold p-2 rounded hover:bg-gray-700 hover:text-white transition"
           disabled={isLoading}
         >
           {isLoading ? "Registrant..." : "Registra't"}
