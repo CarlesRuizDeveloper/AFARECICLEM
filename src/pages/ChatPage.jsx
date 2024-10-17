@@ -152,7 +152,7 @@ const ChatPage = () => {
           </div>
         </div>
       </div>
-      <div className="bg-gray-300 flex flex-col max-w-2xl mx-auto w-full overflow-y-auto p-4 mt-[150px] lg:mt-[180px] mb-[140px] flex-grow">
+      <div className="bg-gray-300 flex flex-col max-w-2xl mx-auto w-full overflow-y-auto p-4 mt-[190px] lg:mt-[220px] mb-[140px] flex-grow">
         {loading ? (
           <div className="flex justify-center items-center h-full">
             <FaSpinner className="animate-spin h-8 w-8 text-red-700" />
